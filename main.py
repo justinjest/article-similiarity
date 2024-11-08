@@ -1,55 +1,60 @@
 import re
+from math import log
 
 def main():
-    pnp_words, pnp_freq = generate_frequency_list("./books/pride_and_prejudice.txt", 10)
-      
-    f_words, frankenstein_freq = generate_frequency_list("./books/frankenstein.txt", 10)
-    
-    print (pnp_words, len(pnp_freq))
-    print(f_words, len(frankenstein_freq))
-
-def generate_frequency_list(path, limit = 0):
-    with open(path) as f:
-        file_contents = f.read()
-        print (f"--- Begin report of books/frankenstein.txt ---")
-        print ("\n")
-        frequency = count_unique_words(file_contents)
-        word_count = frequency[0][1] # This is always the total_words as it is the largest
-        print (f"{word_count} words found in the document")
-        pPrint(frequency, limit)
-        print ("--- End report ---")
-    return (word_count, frequency)
+    with open("./books/pride_and_prejudice.txt") as f:
+        pnp = f.read()
+    with open("./books/frankenstein.txt") as q:
+       f = q.read()
+    corpus = [pnp, f]
+    dt_tf = [
+    for i in range(len(corpus)):
+        unique_words, all_words = tokenize(corpus[i])
+        for w in range(all_words):
+            dt_tf[w][i] = dt_tf[w][i] + (1/len(all_words))
 
 
-def count_unique_words(string):
-    frequency = {}
-    frequency["total_words"] = 0
+
+def inverse_docuement_frequency(first_list, *argv):
+    size_of_corpus = len(argv) + 1
+    appearences = {}
+    vector_res = {}
+    if len(argv) == 0:
+        print("Only 1 file")
+        return
+    for word in first_list:
+        if word != appearences:
+            appearences[word] = 1
+        else:
+            appearences[word] += 1
+    for arg in argv:
+        for word in arg:
+            if word != appearences:
+                appearences[word] = 1
+            else:
+                appearences[word] += 1
+    for i in appearences:
+        if i not in first_list:
+            continue
+        elif i != "total_words": 
+            tf = first_list[i]/first_list["total_words"]
+            dt = log(size_of_corpus/appearences[i], 10)
+            vector_res[i] = tf * dt
+    print(vector_res)
+
+
+
+def tokenize(string)->list:
+    tokens = []
+    all_words = []
     words = string.split()
     for word in words:
         word = word.lower()
         word = re.sub(r'[^\w\s]','',word)
-        if word not in frequency:
-            frequency[word] = 1
-        else:
-            frequency[word] += 1
-        frequency["total_words"] += 1
-    return sorted(frequency.items(), key=lambda x: x[1], reverse=True)
+        if word not in tokens:
+            tokens.append(word)
+        all_words.append(word)
+    return tokens, all_words
 
 
-def pPrint(dict, limit = 0):
-    if limit == 0:
-        for key, value in dict:
-            if key != "total_words":
-                print(f"{key}: {value}")
-            else:
-                continue
-    if limit != 0:
-        line = 0
-        for key, value in dict:
-            if key == "total_words":
-                continue
-            if line >= limit:
-                break
-            print (f"{key}: {value}")
-            line += 1
 main()
