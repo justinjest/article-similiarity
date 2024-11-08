@@ -13,6 +13,7 @@ def clean_file(string) -> list:
     return words
 
 def create_set(corpus) -> list:
+    # Just a file with all words in it
     words_set = set()
     for doc in corpus:
         words = clean_file(doc)
@@ -22,19 +23,17 @@ def create_set(corpus) -> list:
     return words_set, n_docs, n_words_set
         
 def dt_tf_gen(corpus) -> pd.DataFrame:
-    words_set = set()
-
     words_set, n_docs, n_words_set = create_set(corpus)
-
     df_tf = pd.DataFrame(np.zeros((n_docs, n_words_set)), columns=list(words_set))
-
+    # This is an array of shape len(words_set), len
     for i in range (n_docs):
         words = corpus[i].split(' ')
         for w in words:
-            df_tf[w][i] = df_tf[w][i] + (1 / len(words)) # Sum of each version + 1/len(words)
+            df_tf.loc[i,w] = df_tf[w][i] + (1 / len(words)) # Sum of each version + 1/len(words)
     return df_tf
 
 def idf_gen(corpus) ->pd.DataFrame:
+    # This is just a single array, it works because all of the keys are the same
     words_set, n_docs, n_words_set = create_set(corpus)
 
     idf = {}
@@ -42,7 +41,7 @@ def idf_gen(corpus) ->pd.DataFrame:
     for w in words_set:
         k = 0    # number of documents in the corpus that contain this word
         for i in range(n_docs):
-            if w in corpus[i].split():
+            if w in corpus[i].split(' '):
                 k += 1
                 
         idf[w] =  np.log10(n_docs / k)
@@ -56,7 +55,7 @@ def df_tf_idf(corpus):
     words_set, n_docs, n_words_set = create_set(corpus)
     for w in words_set:
         for i in range(n_docs):
-            df_tf_idf[w][i] = df_tf[w][i] * idf[w]
+            df_tf_idf[i, w] = df_tf[w][i] * idf[w]
     return df_tf_idf
 
 corpus = load_corpus()
