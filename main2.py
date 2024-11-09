@@ -29,11 +29,11 @@ def dt_tf_gen(corpus) -> pd.DataFrame:
     for i in range (n_docs):
         words = corpus[i].split(' ')
         for w in words:
-            df_tf.loc[i,w] = df_tf[w][i] + (1 / len(words)) # Sum of each version + 1/len(words)
+            df_tf[w][i] = df_tf[w][i] + (1 / len(words)) # Sum of each version + 1/len(words)
     return df_tf
 
 def idf_gen(corpus) ->pd.DataFrame:
-    # This is just a single array, it works because all of the keys are the same
+    # This is just a single array, it works because all of the keys are the s
     words_set, n_docs, n_words_set = create_set(corpus)
 
     idf = {}
@@ -55,7 +55,7 @@ def df_tf_idf(corpus):
     words_set, n_docs, n_words_set = create_set(corpus)
     for w in words_set:
         for i in range(n_docs):
-            df_tf_idf[i, w] = df_tf[w][i] * idf[w]
+            df_tf_idf[w][i] = df_tf[w][i] * idf[w]
     return df_tf_idf
 
 corpus = load_corpus()
