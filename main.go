@@ -16,6 +16,9 @@ type vectorCompare struct {
 type vector struct {
 	allWords map[string]float32
 }
+type response struct {
+	value []float32
+}
 type word struct {
 	word           string
 	numAppereances int
@@ -120,14 +123,16 @@ func idfVector(corpus []string) vector {
 	return tmp
 }
 
-func tfIdfVec(tf vectorCompare, idf vector) []vector {
-	res := make([]vector, len(tf.vectors))
+func tfIdfVec(tf vectorCompare, idf vector) []response {
+	res := make([]response, len(tf.vectors))
 	for i := 0; i < len(tf.vectors); i++ {
-		for word := range tf.vectors[i] {
-			res[i] = tf.vectors[item] * idf[item]
+		for word, j := range tf.vectors[i].allWords {
+			tmp := j * idf.allWords[word]
+			fmt.Printf("%v\n", word)
+			res[i].value = append(res[i].value, tmp)
 		}
 	}
-	return make([]vector, 1)
+	return res
 }
 
 func main() {
