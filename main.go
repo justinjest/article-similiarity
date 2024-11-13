@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 )
 
@@ -17,7 +18,7 @@ type vector struct {
 	allWords map[string]float32
 }
 type response struct {
-	value []float32
+	value map[string]float32
 }
 type word struct {
 	word           string
@@ -90,7 +91,17 @@ func tfVector(corpus []string) vectorCompare {
 		for i, word := range all[j].words {
 			tmp.allWords[word.word] = all[j].words[i].termFreq / float32(count[j])
 		}
+
+		keys := make([]string, 0, len(tmp.allWords))
+
+		for k := range tmp.allWords {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
 		allVec.vectors[j].allWords = tmp.allWords
+		for _, k := range keys {
+			allVec.vectors[j].allWords[k] = tmp.allWords[k]
+		}
 	}
 	return allVec
 }
@@ -110,7 +121,7 @@ func idfVector(corpus []string) vector {
 	tmp := emptyVect
 	tmp.allWords = make(map[string]float32)
 	for word := range emptyVect.allWords {
-		tmp.allWords[word] += 0
+		tmp.allWords[word] = 0
 	}
 	for j := 0; j < len(all); j++ {
 		for i, word := range all[j].words {
@@ -126,11 +137,12 @@ func idfVector(corpus []string) vector {
 func tfIdfVec(tf vectorCompare, idf vector) []response {
 	res := make([]response, len(tf.vectors))
 	for i := 0; i < len(tf.vectors); i++ {
-		for word, j := range tf.vectors[i].allWords {
-			tmp := j * idf.allWords[word]
-			fmt.Printf("%v\n", word)
-			res[i].value = append(res[i].value, tmp)
+		res[i].value = make(map[string]float32, len(idf.allWords))
+		for word := range tf.vectors[i].allWords {
+			tmp := tf.vectors[i].allWords[word] * idf.allWords[word]
+			res[i].value[word] = tmp
 		}
+		fmt.Println(res[i])
 	}
 	return res
 }
@@ -141,8 +153,6 @@ func main() {
 	corpus[1] = "Hello world"
 	corpus[2] = "hello hello world"
 	tfVector := tfVector(corpus)
-	fmt.Printf("%v\n", tfVector)
 	idfVector := idfVector(corpus)
-	fmt.Printf("%v\n", idfVector)
 	fmt.Printf("%v\n", tfIdfVec(tfVector, idfVector))
 }
