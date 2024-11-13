@@ -21,3 +21,13 @@ func TestCleanWords(t *testing.T) {
 		}
 	}
 }
+
+func TestSplitWords(t *testing.T) {
+	expected := []string{"hello", "world"}
+	result := splitWords("hello world!")
+	for i := 0; i < len(expected); i++ {
+		if expected[i] != result[i] || len(expected) != len(result) {
+			log.Fatalf("error with cleaning words expected %v, got %v\n", expected, result)
+		}
+	}
+}

@@ -1,11 +1,14 @@
 package main
 
 import (
+	"regexp"
 	"strings"
 )
 
 func splitWords(document string) []string {
-	document = strings.ToLower(document)
+	re := regexp.MustCompile(`[[:punct:]]`)
+	strWithoutPunctuation := re.ReplaceAllString(document, "")
+	document = strings.ToLower(strWithoutPunctuation)
 	words := strings.Split(document, " ")
 	return removeStopWords(words)
 }
