@@ -12,11 +12,6 @@ func main() {
 	tfVector := tfVector(corpus)
 	idfVector := idfVector(corpus)
 	tfIdf := tfIdfVec(tfVector, idfVector)
-	res, err := cosineSimiliarity(tfIdf[0], tfIdf[1])
-	fmt.Printf("%v\n", tfIdf[0])
-	if err != nil {
-		fmt.Printf("Error recevied %v\n", err)
-		return
-	}
-	fmt.Printf("cosine is %v\n", res)
+	res := mostSimiliar(tfIdf[2], tfIdf[0:2])
+	fmt.Printf("most similar is %v\n", res)
 }
